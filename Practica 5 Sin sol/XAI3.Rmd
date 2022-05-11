@@ -92,6 +92,8 @@ th[["p"]][i] <- sum(sal) / nr
 ggplot(th, aes(x=temp, y=hum)) + geom_tile(aes(fill = p, width = 10, height = 15)) + geom_rug(alpha = 0.02) + xlab("Temperature") + ylab("Humidity") + scale_fill_gradient(name = "Number of bikes")
 ```
 
+Observando el gráfico de dependencia parcial, observamos que el número de bicicletas alquiladas aumenta cuando la humedad está por debao de 60 y la temperatura se encuentra entre 13 y los 28 grados. Por el contrario, cuando la temperatura es inferior a 9 grados y la humedad está por encima de los 80, se alquilan menos de 3000 bicicletas.
+
 
 
 ## QUESTION:
