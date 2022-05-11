@@ -1,6 +1,8 @@
 ---
-title: "XAI 3: Model-Agnostic methods"
-output: html_notebook
+title: 'XAI 3: Model-Agnostic methods'
+output:
+  html_document:
+    df_print: paged
 ---
 
 ## EXERCISE:
@@ -73,7 +75,6 @@ Show the density distribution of both input features with the 2D plot as shown i
 TIP: Use geom_tile() to generate the 2D plot. Set width and height to avoid holes. 
 
 ```{r}
-
 sampled <- sample_n(days_since, 40)
 temp <- sampled$temp
 hum <- sampled$hum
@@ -94,6 +95,12 @@ ggplot(th, aes(x=temp, y=hum)) + geom_tile(aes(fill = p, width = 10, height = 15
 Observando el gráfico de dependencia parcial, observamos que el número de bicicletas alquiladas aumenta cuando la humedad está por debao de 60 y la temperatura se encuentra entre 13 y los 28 grados. Por el contrario, cuando la temperatura es inferior a 9 grados y la humedad está por encima de los 80, se alquilan menos de 3000 bicicletas.
 
 
+
+## QUESTION:
+
+Observando el gráfico de dependencia parcial, observamos que el número de bicicletas alquiladas aumenta cuando la humedad está por debao de 60 y la temperatura se encuentra entre 13 y los 28 grados. Por el contrario, cuando la temperatura es inferior a 9 grados y la humedad está por encima de los 80, se alquilan menos de 3000 bicicletas.
+
+
 ## EXERCISE:
 
 Apply the previous concepts to predict the **price** of a house from the database **kc_house_data.csv**. In this case, use again a random forest approximation for the prediction based on the features **bedrooms**, **bathrooms**, **sqft_living**, **sqft_lot**, **floors** and **yr_built**. 
@@ -110,7 +117,7 @@ Analyse the influence of **bedrooms, bathrooms, sqft_living** and **floors** on 
 
 d <- read.csv("kc_house_data.csv")
 
-sampled <- sample_n(d, 40)
+sampled <- sample_n(d, 40) # 40 por que tardaba mucho
 
 sampled <- select(sampled, bedrooms, bathrooms, sqft_living, sqft_lot, floors, yr_built, price)
 
@@ -127,7 +134,21 @@ for(c in names(results)[1:4])
     results[[c]][i] <- sum(sal) / nr
   }
 }
-
+p1 <- ggplot(sampled, aes(x=bedrooms, y=results$bedrooms)) + geom_line() + geom_rug(alpha = 0.1, sides = "b") + ylab("Prediction") + xlab("Bedrooms")
+p2 <- ggplot(sampled, aes(x=bathrooms, y=results$bathrooms)) + geom_line() + geom_rug(alpha = 0.1, sides = "b")+ xlab("Bathrooms")
+p3 <- ggplot(sampled, aes(x=sqft_living, y=results$sqft_living)) + geom_line() + geom_rug(alpha = 0.1, sides = "b")+ xlab("Sqft Living")
+p4 <- ggplot(sampled, aes(x=floors, y=results$floors)) + geom_line() + geom_rug(alpha = 0.1, sides = "b")+ xlab("Floors")
+subplot(p1,p2,p3,p4, shareX = FALSE, titleX = TRUE)
 ```
+
+Como podemos observar en los gráficos, cuando el número de habitaciones aumenta, el precio predicho de la vivienda también aumenta siendo el máximo precio predicho cuando la vivienda tiene 4 dormiorios. Aunque, cuando la vivienda tiene 5 dormitorios el precio predicho vuelve a disminuir pero la cantidad de datos de viviendas con 5 dormitorios es baja.
+
+Por otro lado, observamos que cuando el número de baños aumenta, el precio predicho de la vivienda también lo hace.
+
+Además, en el siguiente gráfico también podemos observar que cuando aumentan los metros cuadrados del apartamento también aumenta el precio del mismo.
+
+Finalmente, cuando aumenta el número de pisos de la vivienda también aumenta el precio predicho de la misma.
+
+
 
 
