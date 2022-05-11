@@ -19,7 +19,7 @@ library(reshape2)
 library(lubridate)
 library(randomForestSRC)
 
-#setwd("/Users/cmonserr/OneDrive - UPV/Trabajo_2/Asignaturas/Evaluacion de modelos/Practicas/Practica 3/Bike-Sharing-Dataset")
+#setwd("Practica 3/Bike-Sharing-Dataset")
 days <- read.csv("day.csv")
 hour <- read.csv("hour.csv")
 
@@ -48,9 +48,19 @@ for(c in names(results)[1:4])
     results[[c]][i] <- sum(sal) / nr
   }
 }
-
+p1 <- ggplot(days_since, aes(x=days_since_2011, y=results$days_since_2011)) + geom_line() +ylim(c(0,6000))+ geom_rug(alpha = 0.1, sides = "b") + ylab("Prediction") + xlab("Days since 2011")
+p2 <- ggplot(days_since, aes(x=temp, y=results$temp)) + geom_line() +ylim(c(0,6000))+ geom_rug(alpha = 0.1, sides = "b")+ xlab("Temperature")
+p3 <- ggplot(days_since, aes(x=hum, y=results$hum)) + geom_line() +ylim(c(0,6000))+ geom_rug(alpha = 0.1, sides = "b")+ xlab("Humidity")
+p4 <- ggplot(days_since, aes(x=windspeed, y=results$windspeed)) + geom_line() +ylim(c(0,6000))+ geom_rug(alpha = 0.1, sides = "b")+ xlab("Wind speed")
+subplot(p1,p2,p3,p4, shareY = TRUE, shareX = FALSE, titleX = TRUE)
 
 ```
+
+Como podemos observar en los gráficos, el alquiler de bicicletas aumenta conforme más dias pasan desde 2011 aunque, cuando pasan 600 dias vuelve a disminuir de nuevo.
+En cuento a la temperatura, observamos que el número de bicicletas alquiladas aumenta cuando la temperatura se encuentra entre los 15 y 25 grados, mientras que por el contrario disminuye cuando las temperaturas son inferiores a los 15 grados.
+Por otro lado, cuando aumenta la humedad, disminuye el número de bicicletas alquiladas.
+Finalemente, cuando aumenta la velocidad del viento disminuye ligeramente el número de bicicletas alquiladas.
+
 
 ## EXERCISE:
 
@@ -62,11 +72,6 @@ Show the density distribution of both input features with the 2D plot as shown i
 
 TIP: Use geom_tile() to generate the 2D plot. Set width and height to avoid holes. 
 
-## QUESTION:
-
-Interpret the results.
-
-
 ```{r}
 
 sampled <- sample_n(days_since, 40)
@@ -76,15 +81,17 @@ th <- inner_join(data.frame(temp),data.frame(hum), by=character())
 th$p <- 0
 
 for(i in 1:nrow(th)){
-  r <- days_since
-  r[["temp"]] <- th[["temp"]][i]
-  r[["hum"]] <- th[["hum"]][i]
-  
-  sal <- predict(rf, r)$predicted
-  th[["p"]][i] <- sum(sal) / nr
+r <- days_since
+r[["temp"]] <- th[["temp"]][i]
+r[["hum"]] <- th[["hum"]][i]
+sal <- predict(rf, r)$predicted
+th[["p"]][i] <- sum(sal) / nr
 }
 
+ggplot(th, aes(x=temp, y=hum)) + geom_tile(aes(fill = p, width = 10, height = 15)) + geom_rug(alpha = 0.02) + xlab("Temperature") + ylab("Humidity") + scale_fill_gradient(name = "Number of bikes")
 ```
+
+Observando el gráfico de dependencia parcial, observamos que el número de bicicletas alquiladas aumenta cuando la humedad está por debao de 60 y la temperatura se encuentra entre 13 y los 28 grados. Por el contrario, cuando la temperatura es inferior a 9 grados y la humedad está por encima de los 80, se alquilan menos de 3000 bicicletas.
 
 
 ## EXERCISE:
@@ -103,7 +110,7 @@ Analyse the influence of **bedrooms, bathrooms, sqft_living** and **floors** on 
 
 d <- read.csv("kc_house_data.csv")
 
-sampled <- sample_n(d, 1000)
+sampled <- sample_n(d, 40)
 
 sampled <- select(sampled, bedrooms, bathrooms, sqft_living, sqft_lot, floors, yr_built, price)
 
@@ -122,4 +129,5 @@ for(c in names(results)[1:4])
 }
 
 ```
+
 
